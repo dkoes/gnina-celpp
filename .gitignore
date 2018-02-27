@@ -26,6 +26,7 @@ pip-log.txt
 
 # User-specific box.com login info
 ftp_config
+ftp_config2
 
 # Unit test / coverage reports
 .coverage

@@ -14,6 +14,9 @@ class gnina(Dock):
     Dock.SCI_PREPPED_LIG_SUFFIX = '_prepared.mol2'
     Dock.SCI_PREPPED_PROT_SUFFIX = '_prepared.pdb'
 
+    def __init__(self,gnina_args=''):
+        self.args = gnina_args
+        Dock.__init__(self)
 
     def _ligand_length(self, lname):
         '''Return max distance between any two atoms of the ligand'''
@@ -147,10 +150,10 @@ class gnina(Dock):
             pocketlen = self._ligand_length(pocketlig)
             #increase autobox add if ligand is much bigger than pocket ligand
             add = max((ligandlen-pocketlen)/2.0, 4)
-            gnina_command = 'gnina -r %s -l %s --autobox_ligand %s --autobox_add %f -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (receptor, ligand, pocketlig, add, output_lig_mol)
+            gnina_command = 'gnina %s -r %s -l %s --autobox_ligand %s --autobox_add %f -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocketlig, add, output_lig_mol)
         else: #use box around ligand
             sz = max(16,ligandlen+4)
-            gnina_command = 'gnina -r %s -l %s --center_x %f --center_y %f --center_z %f --size_x %f --size_y %f --size_z %f  -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (receptor, ligand, pocket_center[0], pocket_center[1], pocket_center[2], sz, sz, sz, output_lig_mol)
+            gnina_command = 'gnina %s -r %s -l %s --center_x %f --center_y %f --center_z %f --size_x %f --size_y %f --size_z %f  -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocket_center[0], pocket_center[1], pocket_center[2], sz, sz, sz, output_lig_mol)
 
         print "Running: " + gnina_command
         os.system(gnina_command)
@@ -169,6 +172,8 @@ if ("__main__") == (__name__):
     parser.add_argument("-l", "--ligsciprepdir", metavar="PATH", help = "PATH where we can find the scientific ligand prep output")
     parser.add_argument("-p", "--protsciprepdir", metavar="PATH", help = "PATH where we can find the scientific protein prep output")
     parser.add_argument("-o", "--outdir", metavar = "PATH", help = "PATH where we will put the docking output")
+    parser.add_argument("--args",help="additional arguments to provide to gnina")
+    
     # Leave option for custom logging config here
     logger = logging.getLogger()
     logging.basicConfig( format  = '%(asctime)s: %(message)s', datefmt = '%m/%d/%y %I:%M:%S', filename = 'final.log', filemode = 'w', level   = logging.INFO )
@@ -180,7 +185,7 @@ if ("__main__") == (__name__):
     abs_running_dir = os.getcwd()
     log_file_path = os.path.join(abs_running_dir, 'final.log')
     log_file_dest = os.path.join(os.path.abspath(dock_dir), 'final.log')
-    docker = gnina()
+    docker = gnina(opt.args)
     docker.run_dock(prot_sci_prep_dir,
                     lig_sci_prep_dir,
                     dock_dir)

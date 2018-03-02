@@ -144,20 +144,21 @@ class gnina(Dock):
         ligandlen = self._ligand_length(ligand)
         # extract ligands from all identified similar receptors
         pocket_center = targ_info_dict['pocket_center']        
-        
+        output_lig = 'docked.sdf.gz'
         if len(tech_prepped_receptor_list) > 1: #receptor had ligand, use that
             pocketlig = tech_prepped_receptor_list[1]
             pocketlen = self._ligand_length(pocketlig)
             #increase autobox add if ligand is much bigger than pocket ligand
             add = max((ligandlen-pocketlen)/2.0, 4)
-            gnina_command = 'gnina %s -r %s -l %s --autobox_ligand %s --autobox_add %f -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocketlig, add, output_lig_mol)
+            gnina_command = 'gnina %s -r %s -l %s --autobox_ligand %s --autobox_add %f -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocketlig, add, output_lig)
         else: #use box around ligand
             sz = max(16,ligandlen+4)
-            gnina_command = 'gnina %s -r %s -l %s --center_x %f --center_y %f --center_z %f --size_x %f --size_y %f --size_z %f  -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocket_center[0], pocket_center[1], pocket_center[2], sz, sz, sz, output_lig_mol)
+            gnina_command = 'gnina %s -r %s -l %s --center_x %f --center_y %f --center_z %f --size_x %f --size_y %f --size_z %f  -o %s --seed 0 1> gnina.stdout 2> gnina.stderr' % (self.args, receptor, ligand, pocket_center[0], pocket_center[1], pocket_center[2], sz, sz, sz, output_lig)
 
         print "Running: " + gnina_command
         os.system(gnina_command)
         os.system('babel %s %s' % (receptor, output_receptor_pdb))
+        os.system('babel -l 1 %s %s' % (output_lig, output_lig_mol))
         return True
 
 

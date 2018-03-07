@@ -173,7 +173,7 @@ if ("__main__") == (__name__):
     parser.add_argument("-l", "--ligsciprepdir", metavar="PATH", help = "PATH where we can find the scientific ligand prep output")
     parser.add_argument("-p", "--protsciprepdir", metavar="PATH", help = "PATH where we can find the scientific protein prep output")
     parser.add_argument("-o", "--outdir", metavar = "PATH", help = "PATH where we will put the docking output")
-    parser.add_argument("--args",help="additional arguments to provide to gnina")
+    parser.add_argument("--args",default='',help="additional arguments to provide to gnina")
     
     # Leave option for custom logging config here
     logger = logging.getLogger()

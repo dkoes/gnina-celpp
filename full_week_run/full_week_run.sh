@@ -1,3 +1,4 @@
+#!/bin/bash
 # Clear previous results so we don't get mixed up
 rm -r 1-get_challenge_data
 rm -r 2-protein_prep
@@ -7,6 +8,7 @@ rm -r 4-docking_cnn
 rm -r 5-pack_docking_results
 rm -r 5-pack_docking_results_cnn
 
+source /home/dkoes/.bashrc
 
 # Run CELPP for this week
 mkdir 1-get_challenge_data
